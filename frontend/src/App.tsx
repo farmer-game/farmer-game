@@ -1,169 +1,101 @@
 /**
  * Farmer Game - Main App Component
- * Temporary placeholder showcasing design system, types, and constants
+ * React Router setup with lazy-loaded pages and error boundaries
  */
 
-import type { GameStatus, FruitType as FruitTypeValue } from '@/types';
-import { GAME_CONFIG, FRUIT_POINTS, ROUTES, CONTRACT_CONFIG } from '@/utils/constants';
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Layout from '@/components/layout/Layout';
+import Loading from '@/components/ui/Loading';
 
-function App() {
-  // Demo: TypeScript types and constants are working
-  const demoGameStatus: GameStatus = 'idle';
-  const demoFruit: FruitTypeValue = 'apple';
-  
-  console.log('Setup verified:', { 
-    types: { demoGameStatus, demoFruit },
-    config: { GAME_CONFIG, CONTRACT_CONFIG },
-    routes: ROUTES,
-    fruitPoints: FRUIT_POINTS,
-  });
-  return (
-    <div className="container" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
-      {/* Hero Section */}
-      <div className="text-center mb-lg">
-        <h1 className="text-orange" style={{ marginBottom: '1rem' }}>
-          🍎 Farmer Game
-        </h1>
-        <p className="text-gray" style={{ fontSize: 'var(--text-lg)' }}>
-          Blockchain-powered fruit catching game on Stacks Testnet
-        </p>
-      </div>
+// Lazy load pages for code splitting
+const Landing = lazy(() => import('@/pages/Landing'));
+const Dashboard = lazy(() => import('@/pages/Dashboard'));
+const Game = lazy(() => import('@/pages/Game'));
+const Leaderboard = lazy(() => import('@/pages/Leaderboard'));
 
-      {/* Design System Preview */}
-      <div className="grid gap-md" style={{ marginTop: '3rem' }}>
-        <div style={{
-          backgroundColor: 'var(--white)',
-          padding: 'var(--spacing-lg)',
-          borderRadius: 'var(--radius-lg)',
-          boxShadow: 'var(--shadow-md)'
-        }}>
-          <h3 className="font-bold" style={{ marginBottom: 'var(--spacing-sm)' }}>
-            ✅ Design System Loaded
-          </h3>
-          <p style={{ color: 'var(--gray-600)', marginBottom: 0 }}>
-            Global styles, typography, and CSS variables are configured. 
-            Ready for component development!
-          </p>
-        </div>
+/**
+ * Error Boundary Component
+ */
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
 
-        {/* Color Palette Preview */}
-        <div style={{
-          backgroundColor: 'var(--white)',
-          padding: 'var(--spacing-lg)',
-          borderRadius: 'var(--radius-lg)',
-          boxShadow: 'var(--shadow-md)'
-        }}>
-          <h4 style={{ marginBottom: 'var(--spacing-md)' }}>Color Palette</h4>
-          <div className="flex gap-sm flex-wrap">
-            <div style={{
-              width: '80px',
-              height: '80px',
-              backgroundColor: 'var(--orange-primary)',
-              borderRadius: 'var(--radius-md)',
-              boxShadow: 'var(--shadow-orange)'
-            }}></div>
-            <div style={{
-              width: '80px',
-              height: '80px',
-              backgroundColor: 'var(--white)',
-              border: '2px solid var(--gray-200)',
-              borderRadius: 'var(--radius-md)'
-            }}></div>
-            <div style={{
-              width: '80px',
-              height: '80px',
-              backgroundColor: 'var(--success)',
-              borderRadius: 'var(--radius-md)'
-            }}></div>
-            <div style={{
-              width: '80px',
-              height: '80px',
-              backgroundColor: 'var(--error)',
-              borderRadius: 'var(--radius-md)'
-            }}></div>
-          </div>
-        </div>
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
 
-        {/* Button Preview */}
-        <div style={{
-          backgroundColor: 'var(--white)',
-          padding: 'var(--spacing-lg)',
-          borderRadius: 'var(--radius-lg)',
-          boxShadow: 'var(--shadow-md)'
-        }}>
-          <h4 style={{ marginBottom: 'var(--spacing-md)' }}>Interactive Elements</h4>
-          <div className="flex gap-md flex-wrap">
-            <button style={{
-              backgroundColor: 'var(--orange-primary)',
-              color: 'var(--white)',
-              fontWeight: 600
-            }}>
-              Primary Button
-            </button>
-            <button style={{
-              backgroundColor: 'var(--white)',
-              color: 'var(--orange-primary)',
-              border: '2px solid var(--orange-primary)'
-            }}>
-              Secondary Button
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('Error boundary caught:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+          <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+            <div className="text-6xl mb-4">😕</div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              Oops! Something went wrong
+            </h1>
+            <p className="text-gray-600 mb-6">
+              {this.state.error?.message || 'An unexpected error occurred'}
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors"
+            >
+              Reload Page
             </button>
           </div>
         </div>
+      );
+    }
 
-        {/* Typography Preview */}
-        <div style={{
-          backgroundColor: 'var(--white)',
-          padding: 'var(--spacing-lg)',
-          borderRadius: 'var(--radius-lg)',
-          boxShadow: 'var(--shadow-md)'
-        }}>
-          <h4 style={{ marginBottom: 'var(--spacing-md)' }}>Typography</h4>
-          <p style={{ fontFamily: 'var(--font-heading)', marginBottom: 'var(--spacing-sm)' }}>
-            <strong>Poppins</strong> - Headings (Bold, 600, 700)
-          </p>
-          <p style={{ fontFamily: 'var(--font-body)', marginBottom: 'var(--spacing-sm)' }}>
-            <strong>Inter</strong> - Body text (Regular, 400-600)
-          </p>
-          <p style={{ fontFamily: 'var(--font-game)', marginBottom: 0 }}>
-            <strong>Fredoka</strong> - Game elements (Playful)
-          </p>
-        </div>
-      </div>
-
-      {/* Constants Preview */}
-      <div style={{
-        marginTop: '3rem',
-        padding: 'var(--spacing-lg)',
-        backgroundColor: 'var(--white)',
-        borderRadius: 'var(--radius-lg)',
-        boxShadow: 'var(--shadow-md)'
-      }}>
-        <h4 style={{ marginBottom: 'var(--spacing-md)' }}>Configuration Constants</h4>
-        <div className="grid gap-sm" style={{ fontSize: 'var(--text-sm)', color: 'var(--gray-600)' }}>
-          <div><strong>Game Duration:</strong> {GAME_CONFIG.DURATION}s</div>
-          <div><strong>Max Lives:</strong> {GAME_CONFIG.MAX_LIVES}</div>
-          <div><strong>Contract:</strong> {CONTRACT_CONFIG.NAME}@{CONTRACT_CONFIG.NETWORK}</div>
-          <div><strong>Apple Points:</strong> {FRUIT_POINTS.apple} | <strong>Watermelon:</strong> {FRUIT_POINTS.watermelon}</div>
-        </div>
-      </div>
-
-      {/* Next Steps */}
-      <div style={{
-        marginTop: '3rem',
-        padding: 'var(--spacing-lg)',
-        backgroundColor: 'var(--orange-light)',
-        borderRadius: 'var(--radius-lg)',
-        textAlign: 'center'
-      }}>
-        <h3 style={{ color: 'var(--orange-dark)', marginBottom: 'var(--spacing-sm)' }}>
-          🚀 Ready for Prompt 5
-        </h3>
-        <p style={{ color: 'var(--gray-800)', marginBottom: 0 }}>
-          Utility Functions (Validators & Formatters)
-        </p>
-      </div>
-    </div>
-  )
+    return this.props.children;
+  }
 }
 
-export default App
+/**
+ * Loading Fallback Component
+ */
+const LoadingFallback: React.FC = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-orange-50 to-white">
+    <Loading fullScreen text="Loading..." />
+  </div>
+);
+
+/**
+ * Main App Component
+ */
+function App() {
+  return (
+    <ErrorBoundary>
+      <BrowserRouter>
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            {/* Landing Page - No Layout */}
+            <Route path="/" element={<Landing />} />
+
+            {/* Pages with Layout */}
+            <Route element={<Layout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/game" element={<Game />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
+            </Route>
+
+            {/* Catch-all redirect */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
+    </ErrorBoundary>
+  );
+}
+
+export default App;

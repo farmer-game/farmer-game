@@ -21,9 +21,11 @@ export function truncateAddress(
  * Formats score with thousand separators
  * @example formatScore(1234567) // "1,234,567"
  */
-export function formatScore(score: number): string {
-  if (typeof score !== 'number' || isNaN(score)) return '0';
-  return score.toLocaleString('en-US');
+export function formatScore(score: number | undefined | null): string {
+  if (score === undefined || score === null || typeof score !== 'number' || isNaN(score) || !isFinite(score)) {
+    return '0';
+  }
+  return Math.floor(score).toLocaleString('en-US');
 }
 
 /**

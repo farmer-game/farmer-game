@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
 
   return (
     <footer className="bg-gray-50 border-t border-gray-200 mt-auto">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-6 lg:px-12 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-6">
           {/* Links Section */}
           <div>
@@ -22,7 +22,7 @@ const Footer: React.FC = () => {
               <li>
                 <Link
                   to={ROUTES.DASHBOARD}
-                  className="text-gray-600 hover:text-primary transition-colors text-sm"
+                  className="text-gray-600 hover:text-orange-500 transition-colors text-sm"
                 >
                   Dashboard
                 </Link>
@@ -30,7 +30,7 @@ const Footer: React.FC = () => {
               <li>
                 <Link
                   to={ROUTES.GAME}
-                  className="text-gray-600 hover:text-primary transition-colors text-sm"
+                  className="text-gray-600 hover:text-orange-500 transition-colors text-sm"
                 >
                   Play Game
                 </Link>
@@ -38,7 +38,7 @@ const Footer: React.FC = () => {
               <li>
                 <Link
                   to={ROUTES.LEADERBOARD}
-                  className="text-gray-600 hover:text-primary transition-colors text-sm"
+                  className="text-gray-600 hover:text-orange-500 transition-colors text-sm"
                 >
                   Leaderboard
                 </Link>
@@ -55,7 +55,7 @@ const Footer: React.FC = () => {
                   href="https://github.com/farmer-game"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-600 hover:text-primary transition-colors text-sm"
+                  className="text-gray-600 hover:text-orange-500 transition-colors text-sm"
                 >
                   GitHub
                 </a>
@@ -65,7 +65,7 @@ const Footer: React.FC = () => {
                   href="https://explorer.stacks.co/?chain=testnet"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-600 hover:text-primary transition-colors text-sm"
+                  className="text-gray-600 hover:text-orange-500 transition-colors text-sm"
                 >
                   Stacks Explorer
                 </a>

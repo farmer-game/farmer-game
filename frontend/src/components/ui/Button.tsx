@@ -18,11 +18,11 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     // Base styles
     const baseStyles = 'inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
 
-    // Variant styles
+    // Variant styles with modern gradients and shadows
     const variantStyles = {
-      primary: 'bg-primary text-white hover:bg-primary-dark focus:ring-primary',
-      secondary: 'bg-white text-primary border-2 border-primary hover:bg-primary hover:text-white focus:ring-primary',
-      ghost: 'bg-transparent text-primary hover:bg-primary hover:bg-opacity-10 focus:ring-primary',
+      primary: 'bg-gradient-to-r from-primary to-orange-600 text-white hover:from-orange-600 hover:to-primary shadow-lg hover:shadow-xl focus:ring-primary transform hover:scale-105',
+      secondary: 'bg-white text-primary border-2 border-primary hover:bg-primary hover:text-white focus:ring-primary shadow-md hover:shadow-lg transform hover:scale-105',
+      ghost: 'bg-transparent text-primary hover:bg-primary/10 focus:ring-primary hover:shadow-md',
     };
 
     // Size styles

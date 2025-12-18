@@ -57,9 +57,12 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log('Register form submitted with name:', playerName);
+
     // Validate player name
     const validation = validatePlayerName(playerName);
     if (!validation.isValid) {
+      console.log('Validation failed:', validation.error);
       setValidationError(validation.error || 'Invalid player name');
       return;
     }
@@ -68,7 +71,9 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
     setValidationError(null);
 
     // Register player
-    await registerPlayer(playerName);
+    console.log('Calling registerPlayer...');
+    const result = await registerPlayer(playerName);
+    console.log('registerPlayer returned:', result);
   };
 
   const isLoading = registerState.loading;

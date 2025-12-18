@@ -52,7 +52,10 @@ export function useContract(): UseContractReturn {
    * Register a new player
    */
   const registerPlayer = useCallback(async (name: string): Promise<boolean> => {
+    console.log('useContract.registerPlayer called with:', name, 'address:', address);
+    
     if (!address) {
+      console.error('Registration failed: No address');
       setRegisterState({ ...INITIAL_STATE, error: 'Wallet not connected' });
       return false;
     }
@@ -60,14 +63,18 @@ export function useContract(): UseContractReturn {
     // Validate player name
     const validation = validatePlayerName(name);
     if (!validation.isValid) {
+      console.error('Registration failed: Validation error', validation.error);
       setRegisterState({ ...INITIAL_STATE, error: validation.error || 'Invalid player name' });
       return false;
     }
 
+    console.log('Setting loading state...');
     setRegisterState({ ...INITIAL_STATE, loading: true });
 
     try {
+      console.log('Calling registerPlayerService...');
       const result = await registerPlayerService(name);
+      console.log('registerPlayerService result:', result);
       
       setRegisterState({
         loading: false,
@@ -77,7 +84,9 @@ export function useContract(): UseContractReturn {
       });
 
       // Poll transaction status
+      console.log('Polling transaction status for:', result.txId);
       const status = await pollTransactionStatus(result.txId);
+      console.log('Transaction status:', status);
       
       if (status === 'confirmed') {
         setPlayer(name);
@@ -87,6 +96,7 @@ export function useContract(): UseContractReturn {
         return false;
       }
     } catch (err) {
+      console.error('Registration error:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to register player';
       setRegisterState({
         loading: false,

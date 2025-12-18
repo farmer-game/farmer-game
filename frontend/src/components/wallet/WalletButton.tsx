@@ -47,7 +47,7 @@ const WalletButton: React.FC = () => {
       <button
         onClick={connect}
         disabled={loading}
-        className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+        className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary to-orange-600 text-white rounded-xl font-semibold hover:from-orange-600 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transform hover:scale-105"
         aria-label="Connect wallet"
       >
         {loading ? (
@@ -58,7 +58,8 @@ const WalletButton: React.FC = () => {
         ) : (
           <>
             <Wallet size={18} aria-hidden="true" />
-            <span>Connect Wallet</span>
+            <span className="hidden sm:inline">Connect Wallet</span>
+            <span className="sm:hidden">Connect</span>
           </>
         )}
       </button>

@@ -33,7 +33,14 @@ export async function registerPlayer(name: string): Promise<{ txId: string; succ
         functionArgs: [stringAsciiCV(name)],
         network,
         anchorMode: AnchorMode.Any,
-        onFinish: (data) => resolve({ txId: data.txId, success: true }),
+        appDetails: {
+          name: 'Farmer Game',
+          icon: window.location.origin + '/logo.png',
+        },
+        onFinish: (data) => {
+          console.log('Registration transaction broadcast:', data.txId);
+          resolve({ txId: data.txId, success: true });
+        },
         onCancel: () => reject(new Error('User cancelled transaction')),
       });
     });
@@ -204,16 +211,35 @@ export async function getLeaderboardEntry(rank: number): Promise<{
     });
 
     const jsonResult = cvToJSON(result);
-    if (jsonResult.value === null) return null;
+    
+    // Handle null or undefined values
+    if (!jsonResult || jsonResult.value === null || jsonResult.value === undefined) {
+      return null;
+    }
+
+    // Check if the result indicates an error (TypeValueError)
+    if (jsonResult.type && jsonResult.type.includes('error')) {
+      return null;
+    }
+
+    // Validate expected structure
+    const value = jsonResult.value;
+    if (!value || !value.player || !value.score) {
+      return null;
+    }
 
     return {
-      player: jsonResult.value.player.value,
-      score: parseInt(jsonResult.value.score.value, 10),
-      gameId: parseInt(jsonResult.value['game-id'].value, 10),
-      timestamp: parseInt(jsonResult.value.timestamp.value, 10),
+      player: value.player.value,
+      score: parseInt(value.score.value, 10) || 0,
+      gameId: parseInt(value['game-id']?.value || '0', 10),
+      timestamp: parseInt(value.timestamp?.value || '0', 10),
     };
   } catch (error) {
-    console.error('Error getting leaderboard entry:', error);
+    // Only log if it's not a TypeValueError (which is expected for empty leaderboard)
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    if (!errorMessage.includes('TypeValueError')) {
+      console.error('Error getting leaderboard entry:', error);
+    }
     return null;
   }
 }
@@ -229,18 +255,33 @@ export async function getLeaderboard(count: number = 10): Promise<Array<{
   timestamp: number;
 }>> {
   const entries = [];
+  let consecutiveErrors = 0;
+  const MAX_CONSECUTIVE_ERRORS = 2; // Stop after 2 consecutive errors
   
   for (let rank = 1; rank <= count; rank++) {
     try {
       const entry = await getLeaderboardEntry(rank);
       if (entry) {
         entries.push({ rank, ...entry });
+        consecutiveErrors = 0; // Reset error counter on success
       } else {
-        break;
+        consecutiveErrors++;
+        // If we get 2 consecutive null results, likely no more entries
+        if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+          break;
+        }
       }
     } catch (error) {
-      console.error(`Error fetching rank ${rank}:`, error);
-      break;
+      consecutiveErrors++;
+      // Don't log TypeValueError (expected for empty leaderboard)
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (consecutiveErrors === 1 && !errorMessage.includes('TypeValueError')) {
+        console.error(`Error fetching leaderboard rank ${rank}:`, error);
+      }
+      // Stop if too many errors (likely empty leaderboard)
+      if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+        break;
+      }
     }
   }
 

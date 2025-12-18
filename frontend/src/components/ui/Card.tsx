@@ -20,20 +20,20 @@ const Card: React.FC<CardProps> = ({
   className = '',
   onClick,
 }) => {
-  // Base styles
-  const baseStyles = 'bg-white rounded-lg shadow-card transition-all duration-200';
+  // Base styles with modern shadow and subtle border
+  const baseStyles = 'bg-white rounded-xl shadow-lg border border-gray-100 transition-all duration-300';
 
   // Padding variants
   const paddingStyles = {
     none: '',
-    sm: 'p-3',
-    md: 'p-4 sm:p-6',
-    lg: 'p-6 sm:p-8',
+    sm: 'p-4',
+    md: 'p-6 sm:p-8',
+    lg: 'p-8 sm:p-10',
   };
 
-  // Hover effect
+  // Hover effect with transform and shadow
   const hoverStyles = hoverEffect
-    ? 'hover:shadow-card-hover hover:border-primary border-2 border-transparent cursor-pointer'
+    ? 'hover:shadow-2xl hover:border-primary hover:-translate-y-1 cursor-pointer'
     : '';
 
   // Interactive styles

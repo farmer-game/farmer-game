@@ -2,8 +2,7 @@
  * Stacks Blockchain Service
  * Handles wallet connection and network configuration
  */
-
-import { AppConfig, UserSession, showConnect } from '@stacks/connect';
+import { AppConfig, UserSession, request } from '@stacks/connect';
 import { STACKS_TESTNET, STACKS_MAINNET } from '@stacks/network';
 import type { StacksNetwork } from '@/types/contract.types';
 
@@ -31,28 +30,29 @@ export function getApiUrl(): string {
 }
 
 /**
- * Connect wallet using Stacks Connect
+ * Connect wallet using Stacks Connect v8 API
  * Opens wallet selection modal and initiates connection
  */
 export async function connectWallet(): Promise<string> {
-  return new Promise((resolve, reject) => {
-    showConnect({
-      appDetails: {
-        name: 'Farmer Game',
-        icon: window.location.origin + '/logo.png',
-      },
-      redirectTo: '/',
-      onFinish: () => {
-        const userData = userSession.loadUserData();
-        const address = userData.profile.stxAddress.testnet || userData.profile.stxAddress.mainnet;
-        resolve(address);
-      },
-      onCancel: () => {
-        reject(new Error('User cancelled wallet connection'));
-      },
-      userSession,
-    });
-  });
+  try {
+    // Use Stacks Connect v8 request API to get addresses
+    const result = await request('stx_getAddresses');
+    
+    // Get the first address from the result
+    if (result && result.addresses && result.addresses.length > 0) {
+      const address = result.addresses[0].address;
+      return address;
+    } else {
+      throw new Error('No address found after connection');
+    }
+  } catch (error) {
+    console.error('Connect wallet error:', error);
+    if (error instanceof Error) {
+      throw error;
+    } else {
+      throw new Error('Please install Hiro Wallet or Leather Wallet extension to connect.');
+    }
+  }
 }
 
 /**
@@ -76,19 +76,14 @@ export function isWalletConnected(): boolean {
  * Returns null if not connected
  */
 export function getAddress(): string | null {
-  if (!userSession.isUserSignedIn()) {
-    return null;
-  }
-
   try {
-    const userData = userSession.loadUserData();
-    const networkType = import.meta.env.VITE_STACKS_NETWORK as StacksNetwork;
-    
-    if (networkType === 'mainnet') {
-      return userData.profile.stxAddress.mainnet;
+    // Get address from localStorage where zustand persist stores it
+    const storedState = localStorage.getItem('farmer-game-store');
+    if (storedState) {
+      const parsed = JSON.parse(storedState);
+      return parsed.state?.address || null;
     }
-    
-    return userData.profile.stxAddress.testnet;
+    return null;
   } catch (error) {
     console.error('Error getting address:', error);
     return null;
