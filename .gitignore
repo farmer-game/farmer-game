@@ -1,2 +1,27 @@
 building_contract.md
 building_frontend.md
+FRONTEND_PROMPTS.md
+
+# Frontend environment variables
+frontend/.env
+frontend/.env.local
+
+# Node modules
+node_modules/
+frontend/node_modules/
+contract/node_modules/
+
+# Build outputs
+frontend/dist/
+frontend/build/
+
+# TypeScript
+*.tsbuildinfo
+
+# Editor directories
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
